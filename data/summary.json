@@ -1,0 +1,97 @@
+{
+  "Amazon & Shopping": {
+    "count": 159,
+    "total": 3969.63,
+    "avg": 24.97
+  },
+  "Auto & Mobilität": {
+    "count": 21,
+    "total": 1090.36,
+    "avg": 51.92
+  },
+  "Bildung & Sprachen": {
+    "count": 8,
+    "total": 212.13,
+    "avg": 26.52
+  },
+  "Drogerie": {
+    "count": 10,
+    "total": 226.82,
+    "avg": 22.68
+  },
+  "Gastronomie": {
+    "count": 56,
+    "total": 1027.12,
+    "avg": 18.34
+  },
+  "Gesundheit": {
+    "count": 3,
+    "total": 37.77,
+    "avg": 12.59
+  },
+  "Heim & Garten": {
+    "count": 7,
+    "total": 392.42,
+    "avg": 56.06
+  },
+  "KI & Software": {
+    "count": 47,
+    "total": 1800.48,
+    "avg": 38.31
+  },
+  "Kleidung & Mode": {
+    "count": 16,
+    "total": 1485.71,
+    "avg": 92.86
+  },
+  "Lebensmittel": {
+    "count": 68,
+    "total": 2566.83,
+    "avg": 37.75
+  },
+  "Sonstiges": {
+    "count": 154,
+    "total": 29415.2,
+    "avg": 191.01
+  },
+  "Sparen & Invest": {
+    "count": 82,
+    "total": 125978.87,
+    "avg": 1536.33
+  },
+  "Spenden": {
+    "count": 12,
+    "total": 120.0,
+    "avg": 10.0
+  },
+  "Sport & Freizeit": {
+    "count": 27,
+    "total": 556.9,
+    "avg": 20.63
+  },
+  "Steuern & Abgaben": {
+    "count": 6,
+    "total": 12925.79,
+    "avg": 2154.3
+  },
+  "Streaming & Abos": {
+    "count": 21,
+    "total": 439.79,
+    "avg": 20.94
+  },
+  "Telefon & Internet": {
+    "count": 35,
+    "total": 631.31,
+    "avg": 18.04
+  },
+  "Versicherungen": {
+    "count": 20,
+    "total": 4543.66,
+    "avg": 227.18
+  },
+  "Wohnen & Kredit": {
+    "count": 16,
+    "total": 28203.98,
+    "avg": 1762.75
+  }
+}

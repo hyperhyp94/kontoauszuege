@@ -7,6 +7,9 @@ import requests
 
 app = Flask(__name__, static_folder=".")
 
+DATA_DIR = os.path.join(os.path.dirname(__file__), "data")
+CLASSIFIED_FILE = os.path.join(DATA_DIR, "classified.json")
+
 # API key from environment or .env
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
 if not OPENROUTER_KEY:
@@ -148,6 +151,16 @@ def classify():
     except Exception as e:
         results = [quick_classify(t.get("Empfaenger", ""), t.get("Verwendung", "")) for t in batch]
         return jsonify({"categories": results, "fallback": True, "error": str(e)})
+
+
+@app.route("/api/data", methods=["GET"])
+def get_data():
+    """Return Hermes-preclassified data from classified.json."""
+    if os.path.exists(CLASSIFIED_FILE):
+        with open(CLASSIFIED_FILE, encoding="utf-8") as f:
+            data = json.load(f)
+        return jsonify({"transactions": data, "source": "hermes"})
+    return jsonify({"transactions": [], "source": "none"})
 
 
 if __name__ == "__main__":

@@ -145,6 +145,8 @@
     <p>Klicke oder ziehe deine Datei hierher (.csv, .xlsx, .xls)</p>
     <div class="upload-hint">Unterstützt: CSV, Excel (.xlsx, .xls) · DKB, ING, Sparkasse, Comdirect</div>
   </div>
+  <button class="classify-btn" style="max-width:520px;margin-top:8px" onclick="loadHermesData()">📊 Hermes-klassifizierte Daten laden</button>
+  <p style="text-align:center;color:var(--muted);font-size:12px;margin-top:8px" id="hermes-status"></p>
 </div>
 
 <div id="classify-screen">
@@ -549,6 +551,28 @@ function resetApp(){
   document.getElementById('dashboard-screen').style.display='none';
   document.getElementById('upload-screen').style.display='flex';
   document.getElementById('csv-input').value='';
+}
+
+async function loadHermesData(){
+  const status = document.getElementById('hermes-status');
+  status.textContent = 'Lade Daten…';
+  try {
+    const res = await fetch('/api/data');
+    const json = await res.json();
+    if (json.source === 'hermes' && json.transactions.length > 0) {
+      classifiedData = json.transactions;
+      parsedData = json.transactions; // for compatibility
+      document.getElementById('upload-screen').style.display='none';
+      document.getElementById('classify-screen').style.display='none';
+      document.getElementById('progress-screen').style.display='none';
+      showDashboard();
+      status.textContent = '';
+    } else {
+      status.textContent = 'Keine Daten vorhanden. Lade zuerst eine CSV hoch.';
+    }
+  } catch(e) {
+    status.textContent = 'Fehler: ' + e.message;
+  }
 }
 </script>
 </body>
