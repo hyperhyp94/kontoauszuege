@@ -229,6 +229,15 @@
       </div>
     </div>
     <div class="cat-section">
+      <div class="section-label">Monatsübersicht</div>
+      <div class="txn-section" style="margin-bottom:28px">
+        <table class="txn-table" id="monthly-table">
+          <thead><tr><th>Monat</th><th>Ausgaben</th><th style="width:40%">Verteilung</th><th># Txns</th><th>Top-Kategorie</th><th>Ø/Tag</th></tr></thead>
+          <tbody id="monthly-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="cat-section">
       <div class="section-label">Kategorien</div>
       <div class="cat-grid" id="cat-grid"></div>
     </div>
@@ -480,7 +489,7 @@ function applyFilters(){
     return true;
   });
   filteredData.sort((a,b)=>sort==='date-desc'?new Date(b.Datum)-new Date(a.Datum):sort==='date-asc'?new Date(a.Datum)-new Date(b.Datum):sort==='amount-desc'?b.Betrag-a.Betrag:a.Betrag-b.Betrag);
-  renderMetrics();renderCatGrid();renderCharts();renderTxnTable();
+  renderMetrics();renderCatGrid();renderCharts();renderTxnTable();renderMonthlyTable();
 }
 
 function renderMetrics(){
@@ -530,7 +539,41 @@ function renderTxnTable(){
     const idx=classifiedData.indexOf(t);const col=CAT_COLORS[t.Kategorie]||'#888';
     return `<tr><td class="txn-date">${t.Datum}</td><td><div class="txn-emp">${t.Empfaenger.substring(0,45)}</div></td><td><div class="txn-use">${t.Verwendung.substring(0,55)||'–'}</div></td><td><button class="edit-cat" style="background:${col}22;color:${col}" onclick="openModal(${idx})">${t.Kategorie}</button></td><td class="txn-amount">-${fmt(t.Betrag)}</td></tr>`;
   }).join('');
-  document.getElementById('txn-more').textContent=filteredData.length>150?`Zeige 150 von ${filteredData.length}. Filter nutzen.`:'';
+  document.getElementById('txn-more').textContent=filteredData.length>150?`Zeige 150 von ${filteredData.length}. Filter nutzen.`:'';}
+
+function renderMonthlyTable(){
+const data = classifiedData.length > 0 ? classifiedData : [];
+const months = [...new Set(data.map(t => t.Datum?.substring(0,7)))].sort();
+const mn = ['','Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'];
+const rows = months.map(m => {
+  const txns = data.filter(t => t.Datum?.startsWith(m));
+  const total = txns.reduce((s,t) => s + t.Betrag, 0);
+  const count = txns.length;
+  const cats = {};
+  txns.forEach(t => { cats[t.Kategorie] = (cats[t.Kategorie] || 0) + t.Betrag; });
+  const topCat = Object.entries(cats).sort((a,b) => b[1] - a[1])[0];
+  const maxCat = topCat ? topCat[1] : 1;
+  const top4 = Object.entries(cats).sort((a,b) => b[1] - a[1]).slice(0, 4);
+  const bars = top4.map(([cat, amt]) => {
+    const pct = Math.round(amt / total * 100);
+    const col = CAT_COLORS[cat] || '#888';
+    return `<span style="display:inline-block;height:18px;width:${Math.max(pct,2)}%;background:${col};border-radius:3px;margin-right:1px;min-width:2px" title="${cat}: ${fmt(amt)}"></span>`;
+  }).join('');
+  const [y, mo] = m.split('-').map(Number);
+  const daysInMonth = new Date(y, mo, 0).getDate();
+  const avgDay = total / daysInMonth;
+  const label = `${mn[mo]} ${y}`;
+  const topCatCol = topCat ? CAT_COLORS[topCat[0]] || '#888' : '#888';
+  return `<tr onclick="document.getElementById('month-filter').value='${m}';applyFilters()" style="cursor:pointer" title="Klicken zum Filtern">
+    <td style="font-weight:600">${label}</td>
+    <td style="font-weight:600;color:var(--red)">${fmt(total)}</td>
+    <td><div style="display:flex;align-items:center;gap:6px"><div style="flex:1;height:18px;background:var(--surface2);border-radius:3px;overflow:hidden;display:flex">${bars}</div><span style="font-size:10px;color:var(--muted);white-space:nowrap">${top4.map(([c]) => c).join(' · ')}</span></div></td>
+    <td>${count}</td>
+    <td><span style="color:${topCatCol};font-weight:500">${topCat ? topCat[0] : '–'}</span><br><span style="font-size:10px;color:var(--muted)">${topCat ? fmt(topCat[1]) : ''}</span></td>
+    <td style="color:var(--muted)">${fmt(avgDay)}</td>
+  </tr>`;
+}).join('');
+document.getElementById('monthly-body').innerHTML = rows || '<tr><td colspan="6" style="text-align:center;color:var(--muted);padding:24px">Keine Daten</td></tr>';
 }
 
 function openModal(idx){modalIdx=idx;const t=classifiedData[idx];document.getElementById('modal-txn-label').textContent=t.Empfaenger.substring(0,50)+' · '+fmt(t.Betrag);document.getElementById('modal-cat-select').value=t.Kategorie;document.getElementById('edit-modal').style.display='flex';}
